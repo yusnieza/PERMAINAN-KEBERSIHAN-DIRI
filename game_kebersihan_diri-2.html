@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jom Jaga Kebersihan Diri!</title>
+<style>
+:root{--teal:#159f9a;--navy:#173b5b;--cream:#fff8df;--pink:#f7d4e8;--green:#dff4e6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#d8f6f4,#f7fbff 38%,#fff);color:#17324a;min-height:100vh;padding:18px}
+.wrap{max-width:760px;margin:auto}
+header{text-align:center;padding:12px 8px 18px}
+h1{font-size:clamp(1.6rem,5vw,2.5rem);color:#118d89;margin:8px 0}
+.subtitle{margin:0;font-size:1rem}
+.panel{background:white;border:3px solid #bce9e6;border-radius:24px;padding:clamp(18px,4vw,30px);box-shadow:0 8px 0 #c8e9e7}
+.progressrow{display:flex;justify-content:space-between;gap:10px;font-weight:bold;margin-bottom:10px}
+.track{height:12px;background:#e7f1f4;border-radius:99px;overflow:hidden;margin-bottom:22px}
+#bar{height:100%;width:0;background:var(--teal);transition:width .25s}
+.tag{display:inline-block;background:#fff0bd;border-radius:99px;padding:6px 12px;font-size:.9rem;font-weight:bold}
+h2{font-size:clamp(1.25rem,4vw,1.65rem);line-height:1.35;margin:16px 0}
+.answers{display:grid;grid-template-columns:1fr;gap:11px}
+.answer{width:100%;text-align:left;border:2px solid #d8e6ee;background:#f8fbff;padding:14px 16px;border-radius:14px;font-size:1rem;color:#17324a;cursor:pointer}
+.answer:hover:not(:disabled){border-color:var(--teal);background:#effcfb}
+.answer:focus-visible,button:focus-visible{outline:3px solid #f0b63d;outline-offset:3px}
+.answer:disabled{cursor:default}
+.answer.correct{background:#e2f7e8;border-color:#40a967}
+.answer.wrong{background:#fff0ed;border-color:#e58a79}
+#feedback{min-height:56px;margin:16px 0 4px;padding:12px 14px;border-radius:12px;background:#f3f7fa;line-height:1.45}
+.controls{display:flex;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
+button.primary{background:var(--teal);color:white;border:0;border-radius:12px;padding:12px 20px;font-size:1rem;font-weight:bold;cursor:pointer}
+button.secondary{background:white;color:var(--navy);border:2px solid #cddfe7;border-radius:12px;padding:10px 16px;font-size:1rem;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none}
+.result{text-align:center;padding:18px 0}
+.bigscore{font-size:3.2rem;font-weight:800;color:#118d89;margin:10px}
+.tip{margin-top:18px;text-align:left;background:#fff8df;border-radius:16px;padding:16px;line-height:1.55}
+footer{text-align:center;font-size:.85rem;color:#526c7c;margin:18px 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div style="font-size:2.4rem" aria-hidden="true">🧼 🪥 🚿</div>
+  <h1>Jom Jaga Kebersihan Diri!</h1>
+  <p class="subtitle">Kuiz interaktif • Pilih jawapan yang betul dan kumpul bintang ⭐</p>
+</header>
+<main class="panel">
+  <section id="quiz">
+    <div class="progressrow"><span id="counter">Soalan 1 daripada 10</span><span id="score">⭐ 0</span></div>
+    <div class="track" aria-label="Kemajuan kuiz"><div id="bar"></div></div>
+    <span class="tag" id="topic">Kebersihan diri</span>
+    <h2 id="question"></h2>
+    <div class="answers" id="answers"></div>
+    <div id="feedback" role="status" aria-live="polite">Pilih satu jawapan.</div>
+    <div class="controls">
+      <button class="secondary" id="restart">↻ Mula semula</button>
+      <button class="primary" id="next" disabled>Soalan seterusnya →</button>
+    </div>
+  </section>
+  <section id="result" class="result hidden">
+    <div style="font-size:3rem" aria-hidden="true">🏆</div>
+    <h2>Syabas! Kuiz selesai.</h2>
+    <div class="bigscore" id="finalscore">0/10</div>
+    <p id="message"></p>
+    <div class="tip"><strong>Ingat amalan kebersihan:</strong><ul>
+      <li>Cuci dan lap bibir selepas makan.</li>
+      <li>Lap badan dengan tuala bersih selepas mandi.</li>
+      <li>Gunakan pakaian dalam dan pakaian sendiri; jangan berkongsi.</li>
+      <li>Bersihkan anggota sulit dengan cara yang betul dan lap hingga kering menggunakan tuala bersih yang khusus.</li>
+      <li>Jaga privasi dan hormati tubuh sendiri serta orang lain.</li>
+    </ul></div>
+    <button class="primary" id="again">Main lagi 🔁</button>
+  </section>
+</main>
+<footer>Permainan pembelajaran • Sesuai untuk perbincangan bersama guru</footer>
+</div>
+<script>
+const questions = [
+ {topic:"Bibir",q:"Apakah yang perlu kita lakukan selepas makan?",a:["Cuci dan lap bibir","Biarkan bibir kotor","Berkongsi tuala dengan kawan"],c:0,why:"Betul! Cuci dan lap bibir selepas makan."},
+ {topic:"Payudara dan badan",q:"Selepas mandi, apakah amalan yang baik?",a:["Pakai baju yang masih basah","Lap badan dengan tuala bersih","Tidak perlu mengeringkan badan"],c:1,why:"Ya! Tuala bersih membantu mengeringkan badan."},
+ {topic:"Pakaian",q:"Apakah yang tidak patut dikongsi dengan orang lain?",a:["Buku cerita","Pensel warna kelas","Pakaian dalam"],c:2,why:"Betul. Pakaian dalam ialah barangan peribadi."},
+ {topic:"Kebersihan diri",q:"Mengapakah kita perlu menggunakan tuala yang bersih?",a:["Supaya badan bersih dan kering","Supaya tuala cepat kotor","Supaya boleh berkongsi tuala"],c:0,why:"Tuala bersih membantu menjaga kebersihan diri."},
+ {topic:"Genital dan punggung",q:"Selepas mandi, kawasan badan yang telah dibersihkan perlu…",a:["Dibiarkan basah","Dilap hingga kering dengan tuala bersih","Digosok dengan kuat"],c:1,why:"Betul! Lap dengan lembut menggunakan tuala bersih."},
+ {topic:"Barang peribadi",q:"Jika kawan mahu meminjam pakaian dalam kita, apakah tindakan yang betul?",a:["Beri sahaja","Tukar dengan kawan","Terangkan bahawa pakaian dalam ialah barang peribadi"],c:2,why:"Bagus. Barang peribadi seperti pakaian dalam tidak dikongsi."},
+ {topic:"Kebersihan mulut",q:"Bilakah kita patut membersihkan bibir?",a:["Selepas makan","Hanya apabila hendak tidur","Tidak perlu langsung"],c:0,why:"Ya! Bersihkan bibir selepas makan."},
+ {topic:"Privasi tubuh",q:"Apakah yang patut kita lakukan untuk menjaga privasi tubuh?",a:["Membiarkan orang lain melihat anggota sulit","Menjaga anggota sulit dan memberitahu orang dewasa dipercayai jika tidak selesa","Mengusik tubuh orang lain"],c:1,why:"Betul. Tubuh kita perlu dihormati. Minta bantuan orang dewasa dipercayai jika berasa tidak selamat."},
+ {topic:"Kebersihan diri",q:"Apakah pilihan yang paling bersih selepas menggunakan tandas?",a:["Tidak mencuci tangan","Terus makan","Membersihkan diri dan mencuci tangan dengan sabun"],c:2,why:"Bagus! Membersihkan diri dan mencuci tangan ialah amalan penting."},
+ {topic:"Amalan harian",q:"Apakah yang patut dilakukan jika tuala sudah kotor atau berbau?",a:["Gunakan tuala itu juga","Tukar kepada tuala bersih dan maklumkan kepada penjaga jika perlu","Pinjam tuala rakan tanpa izin"],c:1,why:"Tepat! Gunakan tuala bersih dan kering."}
+];
+let index=0, points=0, answered=false;
+const $=id=>document.getElementById(id);
+function render(){
+ answered=false;
+ const item=questions[index];
+ $("quiz").classList.remove("hidden"); $("result").classList.add("hidden");
+ $("counter").textContent=`Soalan ${index+1} daripada ${questions.length}`;
+ $("score").textContent=`⭐ ${points}`;
+ $("bar").style.width=`${index/questions.length*100}%`;
+ $("topic").textContent=item.topic;
+ $("question").textContent=item.q;
+ $("feedback").textContent="Pilih satu jawapan.";
+ $("next").disabled=true;
+ $("next").textContent=index===questions.length-1?"Lihat keputusan 🏆":"Soalan seterusnya →";
+ $("answers").innerHTML="";
+ item.a.forEach((answer,i)=>{
+   const b=document.createElement("button"); b.className="answer"; b.textContent=String.fromCharCode(65+i)+". "+answer;
+   b.addEventListener("click",()=>choose(i)); $("answers").appendChild(b);
+ });
+}
+function choose(choice){
+ if(answered)return; answered=true;
+ const item=questions[index]; const buttons=[...$("answers").children];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("correct");else if(i===choice)b.classList.add("wrong")});
+ if(choice===item.c){points++;$("feedback").textContent="⭐ Betul! "+item.why;}
+ else $("feedback").textContent="Cuba ingat semula. "+item.why;
+ $("score").textContent=`⭐ ${points}`;$("next").disabled=false;
+}
+$("next").addEventListener("click",()=>{
+ if(!answered)return;
+ if(index<questions.length-1){index++;render();}
+ else{
+  $("quiz").classList.add("hidden");$("result").classList.remove("hidden");
+  $("bar").style.width="100%";$("finalscore").textContent=`${points}/${questions.length}`;
+  $("message").textContent=points===questions.length?"Hebat! Semua jawapan betul.":points>=7?"Bagus! Terus amalkan kebersihan diri.":"Terus berlatih ya. Baca semula nota dan cuba lagi.";
+ }
+});
+function reset(){index=0;points=0;render();}
+$("restart").addEventListener("click",reset);$("again").addEventListener("click",reset);
+render();
+</script>
+</body>
+</html>
